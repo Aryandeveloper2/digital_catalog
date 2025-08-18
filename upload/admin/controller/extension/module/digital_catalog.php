@@ -33,6 +33,7 @@ class ControllerExtensionModuleDigitalCatalog extends Controller
 
             $post_data['digital_catalog_image_limit'] = isset($post_data['digital_catalog_image_limit']) ? (int)$post_data['digital_catalog_image_limit'] : 3;
 
+
             $this->model_setting_setting->editSetting('digital_catalog', ['digital_catalog' => $post_data]);
 
 
@@ -61,6 +62,7 @@ class ControllerExtensionModuleDigitalCatalog extends Controller
         } else {
             $data['error_warning'] = '';
         }
+        
 
         $data['breadcrumbs'] = array();
 
@@ -126,7 +128,7 @@ class ControllerExtensionModuleDigitalCatalog extends Controller
         $data['digital_catalog_show_phone'] = isset($module_info['digital_catalog_show_phone']) ? $module_info['digital_catalog_show_phone'] : 0;
 
         $data['digital_catalog_image_limit'] = isset($module_info['digital_catalog_image_limit']) ? (int)$module_info['digital_catalog_image_limit'] : 3;
-
+    
         $data['header'] = $this->load->controller('common/header');
         $data['column_left'] = $this->load->controller('common/column_left');
         $data['footer'] = $this->load->controller('common/footer');
@@ -138,7 +140,8 @@ class ControllerExtensionModuleDigitalCatalog extends Controller
     {
         if (!$this->user->hasPermission('modify', 'extension/module/digital_catalog')) {
             $this->error['warning'] = $this->language->get('error_permission');
-        }
+        }     
+    
         return !$this->error;
     }
 }

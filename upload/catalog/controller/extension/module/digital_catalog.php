@@ -10,7 +10,6 @@ class ControllerExtensionModuleDigitalCatalog extends Controller{
         $this->load->model('catalog/category');
         $this->load->model('tool/image');
 
-        $language_id = (int)$this->config->get('config_language_id');
         $settings = $this->config->get('digital_catalog');
 
         $product_id = isset($this->request->get['product_id']) ? (int) $this->request->get['product_id'] : 0;
@@ -25,6 +24,7 @@ class ControllerExtensionModuleDigitalCatalog extends Controller{
         $store_email = $this->config->get('config_email');
         $store_telephone = $this->config->get('config_telephone');
 
+        
 
         $base_data = [
             'base' => HTTP_SERVER,
@@ -78,8 +78,8 @@ class ControllerExtensionModuleDigitalCatalog extends Controller{
             );
 
 
-            // دریافت تصاویر اصلی
-            if ($product['image']) {
+             // دریافت تصاویر اصلی
+             if ($product['image']) {
                 $product['main_image'] = $this->model_tool_image->resize(
                     $product['image'],
                     $this->config->get('theme_' . $this->config->get('config_theme') . '_image_popup_width'),
@@ -96,8 +96,8 @@ class ControllerExtensionModuleDigitalCatalog extends Controller{
             foreach ($limited_images as &$img) {
                 $img['image'] = $this->model_tool_image->resize(
                     $img['image'],
-                    $this->config->get('theme_' . $this->config->get('config_theme') . '_image_additional_width'),
-                    $this->config->get('theme_' . $this->config->get('config_theme') . '_image_additional_height')
+                    $this->config->get('theme_' . $this->config->get('config_theme') . '_image_main_product_width'),
+                    $this->config->get('theme_' . $this->config->get('config_theme') . '_image_main_product_height')
                 );
             }
 

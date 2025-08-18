@@ -28,7 +28,7 @@ header {
 footer {
     position: absolute; 
     bottom: 0;
-    width: 88.25%;
+    width: 89.25%;
     margin: 0 auto;
     background: #c9a35c;
     height: 80px;
@@ -223,14 +223,19 @@ ul.product_color li {
 .col_1 > div img {
     border-radius: 0 50px  40px 50px;
 }
-.product_image .col_1 .first_image img {
+.img-warper{
     position: relative;
     border: 0;
     border-radius: 0 80px 60px 60px;
-    object-fit: cover;
     width: 100%;
     height: 100%;
+    overflow: hidden;
     z-index: 1;
+}
+.product_image .col_1 .first_image img {
+    border: 0;
+    width: auto;
+    height: 100%;
 }
 .product_image .first_image {
     position: relative;

@@ -17,7 +17,7 @@
 		<div id="pdf_content">
 
 			{% for product_data in products %}
-				<div class="product-page" style="page-break-after: {{ loop.last ? 'auto' : 'always' }}; padding-right:7px;">
+				<div class="product-page" style="page-break-after: {{ loop.last ? 'auto' : 'always' }};  padding-right:7px; padding-top:7px;">
 					<header>
 						<div class="store_logo">
 							<img src="{{ base }}catalog/view/theme/default/stylesheet/digital_catalog/image/logo-bazar-rug-01.jpg" width="70px"/>
@@ -73,7 +73,9 @@
 								<div class="col_1">
 									{% if product_data.product.main_image %}
 										<div class="first_image">
-											<img src="{{ product_data.product.main_image }}" alt="Main Image"/>
+											<div class="img-warper">
+												<img src="{{ product_data.product.main_image }}" alt="Main Image"/>
+											</div>
 										</div>
 									{% endif %}
 
@@ -179,14 +181,15 @@
 
 		</div>
 
-		<script src="{{ base }}catalog/view/theme/default/stylesheet/digital_catalog/js/html2pdf.bundle.min.js"></script>
+		{# <script src="{{ base }}catalog/view/theme/default/stylesheet/digital_catalog/js/html2pdf.bundle.min.js"></script> #}
+		<script src="{{ base }}catalog/view/theme/default/stylesheet/digital_catalog/js/html2canvas.min.js"></script> 
+		<script src="{{ base }}catalog/view/theme/default/stylesheet/digital_catalog/js/jspdf.umd.min.js"></script> 
 		<script>
-		document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
 
     // --- تابع ویرایش علائم نگارشی ---
     function formatPunctuation() {
-        var textElements = document.querySelectorAll('.description_section.description span'); 
-        
+        var textElements = document.querySelectorAll('.description_section.description span');
         textElements.forEach(function(element) {
             var text = element.innerHTML;
             var newText = text.replace(/([,.;?،؛؟])/g, '<span>$1</span>');
@@ -194,64 +197,83 @@
         });
     }
 
-    function generatePDF() {
+    // --- تابع ساخت PDF نهایی ---
+    async function generatePDF() {
         window.scrollTo(0, 0);
         document.body.style.overflow = 'hidden';
+        
         const overlay = document.getElementById('pdf-loading-overlay');
-        overlay.style.display = 'block';
-
-        const opt = {
-            margin: 0,
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2, useCORS: true },
-            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-        };
+        if (overlay) {
+            overlay.style.display = 'block';
+        }
 
         const products = document.querySelectorAll('.product-page');
-        const batch = 20;
-        const delay = 300;
+        if (products.length === 0) {
+            console.error('No product pages found.');
+            return;
+        }
+        
+        const doc = new window.jspdf.jsPDF({
+            orientation: 'portrait',
+            unit: 'mm',
+            format: 'a4'
+        });
 
-        function preloadImages(container) {
-            const images = container.querySelectorAll('img');
-            const promises = [];
-            images.forEach(img => {
-                if (!img.complete) {
+        for (let i = 0; i < products.length; i++) {
+            const productPage = products[i];
+            
+            await new Promise(resolve => {
+                const images = productPage.querySelectorAll('img');
+                const promises = [];
+                images.forEach(img => {
+                    if (img.complete) {
+                        return;
+                    }
                     promises.push(new Promise(res => { img.onload = img.onerror = res; }));
+                });
+                if (promises.length > 0) {
+                    Promise.all(promises).then(resolve);
+                } else {
+                    resolve();
                 }
             });
-            return Promise.all(promises);
-        }
 
-        function generateBatchPDF(startIndex) {
-            if (startIndex >= products.length) {
-                overlay.style.display = 'none';
-                document.body.style.overflow = '';
-                return;
-            }
 
-            const batchDiv = document.createElement('div');
-            for (let i = startIndex; i < startIndex + batch && i < products.length; i++) {
-                batchDiv.appendChild(products[i].cloneNode(true));
-            }
+            document.querySelectorAll('.product-page').forEach(p => p.style.display = 'none');
+            productPage.style.display = 'block';
 
-            preloadImages(batchDiv).then(() => {
-                html2pdf().set(opt).from(batchDiv).save(`Digital_catalog_${Math.floor(startIndex / batch) + 1}.pdf`)
-                    .then(() => {
-                        setTimeout(() => {
-                            window.scrollTo(0, 0);
-                            generateBatchPDF(startIndex + batch);
-                        }, delay);
-                    });
+            const canvas = await html2canvas(productPage, {
+                scale: 2,
+                useCORS: true,
+                logging: false,
+                allowTaint: true
             });
-        }
 
-        generateBatchPDF(0);
+            if (i > 0) {
+                doc.addPage();
+            }
+
+            const imgData = canvas.toDataURL('image/jpeg', 0.98);
+            const imgProps = doc.getImageProperties(imgData);
+            const pdfWidth = doc.internal.pageSize.getWidth();
+            const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+            
+            doc.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+
+            await new Promise(resolve => setTimeout(resolve, 50));
+        }
+        document.querySelectorAll('.product-page').forEach(p => p.style.display = '');
+        if (overlay) {
+            overlay.style.display = 'none';
+        }
+        document.body.style.overflow = '';
+        doc.save('Digital_catalog.pdf');
     }
 
-    
-    formatPunctuation(); 
-    generatePDF();       
+    formatPunctuation();
+    generatePDF();
 });
-		</script>
+    
+</script>
 	</body>
 </html>

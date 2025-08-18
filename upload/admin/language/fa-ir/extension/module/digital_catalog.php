@@ -24,6 +24,9 @@ $_['entry_show_qrcode'] = 'نمایش QR Code کالا';
 $_['entry_show_address'] = 'نمایش آدرس';
 $_['entry_show_email'] = 'نمایش ایمیل';
 $_['entry_show_phone'] = 'نمایش تلفن';
+$_['entry_image_limit'] = 'تعداد تصاویر';
+$_['entry_batch'] = 'تعداد محصولات در هر PDF';
+$_['error_batch'] ='لطفا تعداد محصولات هر PDF را وارد کنید'
 
 
 ?>
