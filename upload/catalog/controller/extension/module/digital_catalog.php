@@ -24,7 +24,8 @@ class ControllerExtensionModuleDigitalCatalog extends Controller{
         $store_email = $this->config->get('config_email');
         $store_telephone = $this->config->get('config_telephone');
 
-        
+        $copyright = $this->soconfig->get_settings('copyright');
+
 
         $base_data = [
             'base' => HTTP_SERVER,
@@ -223,6 +224,7 @@ class ControllerExtensionModuleDigitalCatalog extends Controller{
                 $last_category_name = $category_info['name'];
             }
 
+            $product_price = $this->currency->format($this->tax->calculate($product_info['price'], $product_info['tax_class_id'], $this->config->get('config_tax')), $this->session->data['currency']);
             
             // داده‌های  محصول
             $view_data = array_merge($base_data, [
@@ -236,6 +238,7 @@ class ControllerExtensionModuleDigitalCatalog extends Controller{
                 'qrcode' => $product['qrcode'],
                 'current_date' => $current_date,
                 'category_name' => $last_category_name,
+                'price' => $product_price
             ]);
 
             
@@ -250,7 +253,9 @@ class ControllerExtensionModuleDigitalCatalog extends Controller{
             'store_email' => $store_email,
             'store_telephone' => $store_telephone,
             'lang' => $lang_texts,
-            'direction' => ($this->language->get('code') == 'fa' || $this->language->get('code') == 'ar') ? 'rtl' : 'ltr'
+            'copyright' => $copyright,
+            'direction' => ($this->language->get('code') == 'fa' || $this->language->get('code') == 'ar') ? 'rtl' : 'ltr',
+            'language_code' => $this->language->get('code') ,
         ]);
 
         $this->response->setOutput($this->load->view('extension/module/digital_catalog/generate_product_list_by_category', $final_data));

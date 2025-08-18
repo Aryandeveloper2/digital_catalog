@@ -1,11 +1,20 @@
-@font-face{font-family:'main_font-regular';
-    src:url("RokhFaNum-Light.woff") format("woff");
+@font-face{font-family:'main_font-light';
+    src:url("../fonts/RokhFaNum-Light.woff") format("woff");
     font-display: block;
 }
+@font-face{font-family:'main_font-regular';
+    src:url("../fonts/RokhFaNum-Regular.woff") format("woff");
+    font-display: block;
+}
+@font-face{font-family:'eng_main_font-regular';
+    src:url("../fonts/Rokh-Regular.woff") format("woff");
+    font-display: block;
+}
+.lang-rtl { font-family: main_font-light; }
+.lang-ltr { font-family: eng_main_font-regular; }
 
 * {
     box-sizing: border-box;
-    font-family: main_font-regular;
 }
 body {
     position: relative;
@@ -35,6 +44,9 @@ footer {
     display: flex;
     align-items: center;
     justify-content: center;
+}
+footer p {
+    font-size: 13px;
 }
 .store_logo {
     display: flex;
@@ -85,6 +97,9 @@ main:before {
     position: relative;
     margin-bottom: 44px;
 }
+.description_section.description p {
+    margin-left: 15px;
+}
 .title {
     text-align: center;
     margin-bottom: 10px;
@@ -129,6 +144,9 @@ ul.product_color li {
     text-align: justify;
     margin-top: 2rem;
     line-height: 26px;
+}
+body[lang="ar"] .attribute_title {
+    right: -74px !important; 
 }
 .attribute_title {
     position: absolute;
@@ -177,6 +195,7 @@ ul.product_color li {
     border: 4px solid #c9a35c42;
 }
 .category {
+    width: 170px;
     position: absolute;
     bottom: 30px;
     left: 16px;
@@ -303,6 +322,10 @@ span.item {
     font-weight: bold;
 }
 
+#page_address{
+    font-family: eng_main_font-regular;
+}
+
 /* Page Style Important */
 
 @page {
@@ -329,7 +352,7 @@ span.item {
 }
 #pdf-loading-overlay .loading-text {
     position: absolute;
-    top: 50%; 
+    top: 47%; 
     left: 50%;
     transform: translate(-50%, -50%);
     color: #fff;
@@ -340,3 +363,57 @@ body.lock-scroll {
 }
 
 
+#pdf-loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.loading-content {
+    text-align: center;
+    padding: 20px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.loading-text {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.progress-bar-container {
+    width: 250px;
+    height: 20px;
+    background-color: #e0e0e0;
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+    margin: 10px auto;
+    direction: ltr;
+}
+
+.progress-bar {
+    height: 100%;
+    width: 0%;
+    background-color: #4CAF50; 
+    transition: width 0.3s ease;
+}
+
+.progress-percentage {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 12px;
+    font-weight: bold;
+    color: #333;
+}

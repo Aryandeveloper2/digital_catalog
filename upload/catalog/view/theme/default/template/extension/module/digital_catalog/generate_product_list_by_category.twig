@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html dir="rtl" lang="fa">
+<html dir="rtl" lang="{{ language_code }}">
 	<head>
 		<meta charset="UTF-8"/>
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -7,10 +7,14 @@
 		<meta name="viewport" content="width=21cm, initial-scale=1">
 		<link rel="stylesheet" href="{{ base }}catalog/view/theme/default/stylesheet/digital_catalog/css/digital_catalog.css"/>
 	</head>
-	<body >
+	<body class="lang-{{ direction }}" lang="{{ language_code }}" >
 		<!--loading-->
 		<div id="pdf-loading-overlay" dir="{{ direction }}">
 			<div class="loading-text">{{ text_loading_message }}</div>
+			<div class="progress-bar-container">
+            	<div id="progress-bar" class="progress-bar"></div>
+           	 	<span id="progress-percentage" class="progress-percentage">0%</span>
+        	</div>
 		</div>
 
 
@@ -150,7 +154,7 @@
 										<div class="price_box">
 											<span class="label price_label">{{ text_price }}<span>:</span>
 											</span>
-											<span class="item price">{{ product_data.product.price }}</span>
+											<span class="item price">{{ product_data.price }}</span>
 										</div>
 									{% endif %}
 									{% if show_sku %}
@@ -164,7 +168,7 @@
 										<div>
 											<span class="label">{{ text_product_page_address }}<span>:</span>
 											</span>
-											<span class="item">https://bazarrug.com/product/p-{{ product_data.product.product_id }}</span>
+											<span class="item" id="page_address" >https://bazarrug.com/product/p-{{ product_data.product.product_id }}</span>
 										</div>
 									{% endif %}
 								</div>
@@ -172,7 +176,9 @@
 						</div>
 					</main>
 					<footer>
-						zojvgik
+						<p>
+						{{copyright}}
+						</p>
 					</footer>
 				</div>
 			{% else %}
@@ -181,7 +187,6 @@
 
 		</div>
 
-		{# <script src="{{ base }}catalog/view/theme/default/stylesheet/digital_catalog/js/html2pdf.bundle.min.js"></script> #}
 		<script src="{{ base }}catalog/view/theme/default/stylesheet/digital_catalog/js/html2canvas.min.js"></script> 
 		<script src="{{ base }}catalog/view/theme/default/stylesheet/digital_catalog/js/jspdf.umd.min.js"></script> 
 		<script>
@@ -201,27 +206,46 @@ document.addEventListener('DOMContentLoaded', async function() {
     async function generatePDF() {
         window.scrollTo(0, 0);
         document.body.style.overflow = 'hidden';
-        
+
         const overlay = document.getElementById('pdf-loading-overlay');
+        const progressBar = document.getElementById('progress-bar');
+        const progressPercentage = document.getElementById('progress-percentage');
+        
         if (overlay) {
-            overlay.style.display = 'block';
+            overlay.style.display = 'flex'; 
         }
 
         const products = document.querySelectorAll('.product-page');
         if (products.length === 0) {
             console.error('No product pages found.');
+            if (overlay) {
+                overlay.style.display = 'none';
+            }
+            document.body.style.overflow = '';
             return;
         }
-        
-        const doc = new window.jspdf.jsPDF({
+
+        const totalProducts = products.length;
+
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF({
             orientation: 'portrait',
             unit: 'mm',
             format: 'a4'
         });
 
-        for (let i = 0; i < products.length; i++) {
+        for (let i = 0; i < totalProducts; i++) {
             const productPage = products[i];
-            
+
+            // به‌روزرسانی نوار پیشرفت 
+            const progress = Math.min(Math.floor(((i + 1) / totalProducts) * 100), 100);
+            if (progressBar) {
+                progressBar.style.width = progress + '%';
+            }
+            if (progressPercentage) {
+                progressPercentage.innerText = progress + '%';
+            }
+
             await new Promise(resolve => {
                 const images = productPage.querySelectorAll('img');
                 const promises = [];
@@ -237,7 +261,6 @@ document.addEventListener('DOMContentLoaded', async function() {
                     resolve();
                 }
             });
-
 
             document.querySelectorAll('.product-page').forEach(p => p.style.display = 'none');
             productPage.style.display = 'block';
@@ -257,11 +280,12 @@ document.addEventListener('DOMContentLoaded', async function() {
             const imgProps = doc.getImageProperties(imgData);
             const pdfWidth = doc.internal.pageSize.getWidth();
             const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
-            
+
             doc.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
 
             await new Promise(resolve => setTimeout(resolve, 50));
         }
+
         document.querySelectorAll('.product-page').forEach(p => p.style.display = '');
         if (overlay) {
             overlay.style.display = 'none';
@@ -269,6 +293,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         document.body.style.overflow = '';
         doc.save('Digital_catalog.pdf');
     }
+
 
     formatPunctuation();
     generatePDF();
