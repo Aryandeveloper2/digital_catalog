@@ -280,10 +280,19 @@ body[lang="ar"] .attribute_title {
 .detail > *  {
     width: 50%;
 }
-.section_1 {
+
+.section_1.ltr {
+    display: flex;
+    align-items: center;
+    border-right: 4px solid #f1e7d5 ;
+    border-left: none;
+}
+
+.section_1.rtl {
     display: flex;
     align-items: center;
     border-left: 4px solid #f1e7d5;
+    border-right: none;
 }
 .contact {
     list-style: none;
@@ -418,4 +427,11 @@ body.lock-scroll {
     color: #333;
     position: relative;
     bottom: 100%;
+}
+
+.contact li svg {
+    flex-shrink: 0;
+}
+.contact li span {
+    margin: 0 5px;
 }
