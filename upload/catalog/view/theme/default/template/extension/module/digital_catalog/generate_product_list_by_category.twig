@@ -10,11 +10,13 @@
 	<body class="lang-{{ direction }}" lang="{{ language_code }}" >
 		<!--loading-->
 		<div id="pdf-loading-overlay" dir="{{ direction }}">
-			<div class="loading-text">{{ text_loading_message }}</div>
-			<div class="progress-bar-container">
-            	<div id="progress-bar" class="progress-bar"></div>
-           	 	<span id="progress-percentage" class="progress-percentage">0%</span>
-        	</div>
+			<div class="overlay-back">
+				<div class="loading-text">{{ text_loading_message }}</div>
+				<div class="progress-bar-container">
+            		<div id="progress-bar" class="progress-bar"></div>
+           	 		<span id="progress-percentage" class="progress-percentage">0%</span>
+        		</div>
+			</div>
 		</div>
 
 
